@@ -211,6 +211,15 @@ const absImg = (p) => (p && !p.startsWith("http") ? `${SITE_URL}${p}` : p || "")
 
 const stripHtml = (s) => (s || "").replace(/<[^>]*>/g, "").trim();
 
+/** Rewrites the source embed URL to the custom nhplayer-embed domain */
+const rewriteEmbed = (url = "") => {
+  if (!url) return "";
+  return url.replace(
+    /https?:\/\/nhplayer\.com\/v\/([a-zA-Z0-9_-]+)\/?/,
+    "https://nhplayer-embed.vercel.app/api/embed/$1"
+  );
+};
+
 /** Normalize a site video/episode object into a catalog card item. */
 function normalizeVideo(v) {
   if (!v) return null;
@@ -240,7 +249,7 @@ function normalizeVideo(v) {
     // episode-specific data
     ep: v.ep || 1,
     slug: v.slug || "",
-    embedUrl: v.embedUrl || "",
+    embedUrl: rewriteEmbed(v.embedUrl),
     releasedAt: v.releasedAt || "",
     released: v.releasedAt ? v.releasedAt.slice(0, 10) : "",
     status: "Released",
