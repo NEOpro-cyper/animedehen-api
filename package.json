@@ -1,0 +1,18 @@
+{
+  "name": "taroflix-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Standalone data API for TaroFlix — scrapes animeidhentai.com and serves cached JSON so the site frontend stays light.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
