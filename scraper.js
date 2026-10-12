@@ -211,14 +211,16 @@ const absImg = (p) => (p && !p.startsWith("http") ? `${SITE_URL}${p}` : p || "")
 
 const stripHtml = (s) => (s || "").replace(/<[^>]*>/g, "").trim();
 
-/** Rewrites the source embed URL to the custom nhplayer-embed domain */
-const rewriteEmbed = (url = "") => {
-  if (!url) return "";
-  return url.replace(
-    /https?:\/\/nhplayer\.com\/v\/([a-zA-Z0-9_-]+)\/?/,
-    "https://nhplayer-embed.vercel.app/api/embed/$1"
-  );
-};
+/** Embed options: original nhplayer URL + rewritten custom-embed URL */
+const buildEmbeds = (url = "") => ({
+  embedUrl: url || "", // option 1 — original
+  embedUrlAlt: url
+    ? url.replace(
+        /https?:\/\/nhplayer\.com\/v\/([a-zA-Z0-9_-]+)\/?/,
+        "https://nhembed.buzz/api/embed/$1"
+      )
+    : "", // option 2 — rewritten
+});
 
 /** Normalize a site video/episode object into a catalog card item. */
 function normalizeVideo(v) {
@@ -249,7 +251,7 @@ function normalizeVideo(v) {
     // episode-specific data
     ep: v.ep || 1,
     slug: v.slug || "",
-    embedUrl: rewriteEmbed(v.embedUrl),
+    ...buildEmbeds(v.embedUrl),
     releasedAt: v.releasedAt || "",
     released: v.releasedAt ? v.releasedAt.slice(0, 10) : "",
     status: "Released",
@@ -282,6 +284,7 @@ function normalizeUpcoming(item) {
     released: item.releaseAt ? item.releaseAt.slice(0, 10) : "",
     status: "Upcoming",
     embedUrl: "",
+    embedUrlAlt: "",
     upcoming: true,
   };
 }
@@ -527,6 +530,7 @@ export async function getSeriesInfo(slug) {
       vote_average: e.rating || 0,
       isAired: true,
       embedUrl: e.embedUrl,
+      embedUrlAlt: e.embedUrlAlt,
       slug: e.slug,
       language: e.language,
       duration: e.duration,
